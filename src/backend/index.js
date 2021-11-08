@@ -1,16 +1,19 @@
-require('dotenv').config()
+require('dotenv').config();
 const db = require('./config/db');
-const express = require('express')
-const app = express()
+const express = require('express');
+const cors = require('cors');
+const app = express();
 
 const port = process.env.APP_PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(cors());
+app.options('*', cors());
 
 app.get('/guests', (req, res) => {
     try {
         db.query(`
-            SELECT * FROM my_guests
+            SELECT * FROM my_guests ORDER BY id DESC
         `, function (err, rows, fields) {
                 if (err)
                     throw err
