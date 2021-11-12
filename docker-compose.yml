@@ -1,0 +1,35 @@
+version: "3.1"
+
+networks:
+  my-network:
+    driver: bridge
+
+services:
+  db:
+    container_name: my-db
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_DATABASE=my_db
+      - MYSQL_ROOT_PASSWORD=password
+    ports:
+      - 9401:3306
+    networks:
+      - my-network
+    # volumes:
+    #   - ./storage/db/mysql:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: my-phpmyadmin
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOSTS=db
+      - PMA_PORT=9401
+    ports:
+      - 9501:80
+    networks:
+      - my-network
+    depends_on: 
+      - db
