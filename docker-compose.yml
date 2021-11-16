@@ -5,6 +5,18 @@ networks:
     driver: bridge
 
 services:
+  nginx:
+    container_name: my-nginx
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/error.log:/etc/nginx/error_log.log
+      - ./nginx/cache/:/etc/nginx/cache
+      - ./src/frontend/dist/:/var/www/frontend/
+    ports:
+      - 80:80
+      - 443:443
+
   db:
     container_name: my-db
     image: mysql
