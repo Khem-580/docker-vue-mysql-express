@@ -1,15 +1,22 @@
-Backend docker
-    docker build -t image-express-app -f ./service-backend.Dockerfile ./src/backend/
+A Dockerization which combines many services for web development
+such as mysql, phpmyadmin, nodejs and nginx
 
-Development installation
-1. Add  "127.0.0.1 local-frontend" 
-        "127.0.0.1 local-backend" in host file
-2. "npm run build" inside src/frontend directory
-3. "docker-compose up -d" in command line
-4. Open "local-frontend" from your broswer
+## Installation
 
-If you found this problem when restart docker-compose on Windows
-"mysqld: Cannot change permissions of the file 'ca.pem' (OS errno 1 - Operation not permitted)"
+1. Copy text below and place in your host file 
+```
+127.0.0.1 local-frontend
+127.0.0.1 local-backend
+```
 
-then run this command
-"chmod -R 777 ./backup/db"
+2. Build web app in src/frontend directory
+```sh
+npm run build
+```
+
+3. At root of this project
+```sh
+docker-compose up -d
+```
+
+4. Test "http://local-frontend" on your broswer
