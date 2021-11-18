@@ -4,7 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-const port = process.env.APP_PORT || 3000;
+const port = process.env.APP_PORT || 9400;
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors());
@@ -56,6 +56,6 @@ app.post('/guest', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Example app listening at ${process.env.DB_HOST}:${port}`)
 })
 

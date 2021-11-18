@@ -6,6 +6,7 @@ Development installation
         "127.0.0.1 local-backend" in host file
 2. "npm run build" inside src/frontend directory
 3. "docker-compose up -d" in command line
+4. Open "local-frontend" from your broswer
 
 If you found this problem when restart docker-compose on Windows
 "mysqld: Cannot change permissions of the file 'ca.pem' (OS errno 1 - Operation not permitted)"

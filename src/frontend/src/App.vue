@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      requestUrl: process.env.VUE_APP_API_URL || "please-set-env-url",
+      requestUrl: process.env.VUE_APP_API_URL || "127.0.0.1:9400",
       inputGuest: null,
       isLoading: false,
       guestResults: [],
@@ -63,6 +63,7 @@ export default {
         if (responseBody.state == "success") {
           this.isLoading = false;
           this.inputGuest = null;
+          this.getGuests();
         }
       })
       .catch((error) => {
@@ -78,7 +79,6 @@ export default {
       .then(responseBody => {
         if (responseBody.state == "success") {
           this.guestResults = responseBody.data;
-          this.getGuests();
         }
       })
       .catch((error) => {

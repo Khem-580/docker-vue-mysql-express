@@ -13,9 +13,28 @@ services:
       - ./nginx/error.log:/etc/nginx/error_log.log
       - ./nginx/cache/:/etc/nginx/cache
       - ./src/frontend/dist/:/var/www/frontend/
+      - ./src/backend/:/var/www/backend/
     ports:
       - 80:80
       - 443:443
+    networks:
+      - my-network
+    depends_on:
+      - node
+
+  node:
+    container_name: my-node
+    build: 
+      context: ./src/backend
+      dockerfile: service-backend.Dockerfile
+    ports:
+      - 9400:9400
+    networks:
+      - my-network
+    volumes: 
+      - ./src/backend:/app
+    depends_on:
+      - db
 
   db:
     container_name: my-db
@@ -26,7 +45,7 @@ services:
       - MYSQL_DATABASE=my_db
       - MYSQL_ROOT_PASSWORD=password
     ports:
-      - 9401:3306
+      - 3306:3306
     networks:
       - my-network
     volumes:
@@ -39,7 +58,7 @@ services:
     restart: always
     environment:
       - PMA_HOSTS=db
-      - PMA_PORT=9401
+      - PMA_PORT=3306
     ports:
       - 9501:80
     networks:
