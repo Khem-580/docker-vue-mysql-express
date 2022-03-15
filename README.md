@@ -11,6 +11,8 @@ such as mysql, phpmyadmin, nodejs and nginx
 
 2. Build web app in src/frontend directory
 ```sh
+cd ./src/frontend
+npm install
 npm run build
 ```
 

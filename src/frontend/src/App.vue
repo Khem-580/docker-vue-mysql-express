@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      requestUrl: process.env.VUE_APP_API_URL || "127.0.0.1:9400",
+      requestUrl: process.env.VUE_APP_API_URL || "http://127.0.0.1:9400",
       inputGuest: null,
       isLoading: false,
       guestResults: [],

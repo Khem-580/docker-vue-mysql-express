@@ -20,10 +20,10 @@ services:
     networks:
       - my-network
     depends_on:
-      - node
+      - backend
 
-  node:
-    container_name: my-node
+  backend:
+    container_name: my-backend
     build: 
       context: ./src/backend
       dockerfile: service-backend.Dockerfile
@@ -33,6 +33,7 @@ services:
       - my-network
     volumes: 
       - ./src/backend:/app
+      - /app/node_modules
     depends_on:
       - db
 
