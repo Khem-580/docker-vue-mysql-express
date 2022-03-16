@@ -1,26 +1,32 @@
+const { db } = require("../config");
 const validate = require("validate.js");
 
-exports.createTicket = function (req, res) {
+exports.createTicket = async function (req, res) {
   let inputErrors;
   try {
     inputErrors = createTicketValidator(req);
     if (inputErrors) {
       throw "Invalid input";
     }
-    // console.log(createTicketValidator(req));
-    //   res.json(createTicketValidator(req));
-    // db.query(`
-    //     INSERT INTO my_guests (guest_name)
-    //     VALUES ("${req.body.name}");
-    // `, function (err, rows, fields) {
-    //         if (err) throw err
-    //         res.status(200).send({
-    //             "state": "success",
-    //             "message": rows
-    //         })
-    //     }
-    // );
-    res.json("success");
+    const sqlTicketSpec = `SELECT * FROM ticket_spec WHERE ticket_type = ? LIMIT 1`;
+    const ticketSpec = await db.query(sqlTicketSpec, [req.body.ticketType]);
+    if (ticketSpec.length == 0) {
+      throw "Ticket type has no result";
+    } else if (!(req.body.amount >= ticketSpec[0].min_amount_per_order)) {
+      throw `This ticket type has minimum amount per purchase (${ticketSpec[0].min_amount_per_order})`;
+    }
+    const sqlCountTicketsByType = `SELECT SUM(amount) FROM tickets WHERE ticket_spec_id='${ticketSpec[0].id}';`
+    let countTicket = await db.query(sqlCountTicketsByType);
+    countTicket = countTicket[0]['SUM(amount)'];
+    if (countTicket > ticketSpec[0].max_amount_per_day) {
+      throw "This ticket type is not available for now, please try again tomorrow";
+    }
+    const sqlInsertTicket = `INSERT INTO tickets(full_name, ticket_spec_id, amount) VALUES (?,'${ticketSpec[0].id}',?);`;
+    await db.query(sqlInsertTicket, [req.body.fullname, req.body.amount]);
+    res.status(200).send({
+      state: "success",
+      message: "Create tickets successfully",
+    });
   } catch (err) {
     res.status(400).send({
       state: "failure",
@@ -57,9 +63,9 @@ const createTicketValidator = function (req) {
       presence: true,
       numericality: {
         onlyInteger: true,
-        greaterThan: 0
-      }
-    }
+        greaterThan: 0,
+      },
+    },
   };
   return validate(req.body, schema);
 };

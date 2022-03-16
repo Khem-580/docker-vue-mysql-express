@@ -15,10 +15,14 @@ cd ./src/frontend
 npm install
 npm run build
 ```
+***Optional*** If you don't want to run website via nginx you can run serve in this step
+```sh
+npm run serve
+```
 
 3. At root of this project
 ```sh
 docker-compose up -d
 ```
 
-4. Test "http://local-frontend" on your broswer
+4. Test "http://local-frontend" on your browser
