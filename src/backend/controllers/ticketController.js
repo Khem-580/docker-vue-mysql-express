@@ -44,7 +44,7 @@ exports.createTicket = async function (req, res) {
   }
 };
 
-exports.getTickets = async function (_req, res) {
+exports.getTicketSpec = async function (_req, res) {
   try {
     const sqlTicketSpec = `SELECT * FROM ticket_spec`;
     const ticketSpec = await db.query(sqlTicketSpec);
@@ -55,7 +55,7 @@ exports.getTickets = async function (_req, res) {
   } catch (err) {
     res.status(400).send({
       state: "failure",
-      message: err
+      message: err,
     });
   }
 };
@@ -68,13 +68,34 @@ exports.getTicketsByUser = async function (req, res) {
       throw "Invalid input";
     }
     let sqlUserTicket = `SELECT * FROM tickets WHERE full_name=?`;
-    const userTicket = await db.query(sqlUserTicket, [req.query.fullname]);
+    let sqlUserTicketParams = [req.query.fullname];
+    if (req.query.ticketType) {
+      const sqlTicketSpec = `
+        SELECT * 
+        FROM ticket_spec 
+        WHERE ticket_type=? LIMIT 1
+      `;
+      const ticketSpec = await db.query(sqlTicketSpec, [req.query.ticketType]);
+      if (ticketSpec.length > 0) {
+        sqlUserTicket += ` AND ticket_spec_id=?`;
+        sqlUserTicketParams.push(ticketSpec[0].id);
+      } else {
+        throw "Ticket type is invalid";
+      }
+    }
+    if (req.query.date) {
+      sqlUserTicket += ` AND created_at between ? AND ?`;
+      sqlUserTicketParams.push(
+        req.query.date + " 00:00:00",
+        req.query.date + " 23:59:59"
+      );
+    }
+    const userTicket = await db.query(sqlUserTicket, sqlUserTicketParams);
     res.status(200).send({
       state: "success",
       data: userTicket,
     });
   } catch (err) {
-    console.log(err)
     res.status(400).send({
       state: "failure",
       message: err,
@@ -126,8 +147,8 @@ const getTicketsByUserValidator = function (data) {
     date: {
       format: {
         message: "must be format YYYY-MM-DD",
-        pattern: /^(\d){4,5}-(\d){2}-(\d){2}$/
-      }
+        pattern: /^(\d){4,5}-(\d){2}-(\d){2}$/,
+      },
     },
   };
   return validate(data, schema);
