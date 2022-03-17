@@ -1,118 +1,71 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <div class="input-field">
-      <input
-        v-model="inputGuest"
-        type="text"
-        placeholder="Type guest name" 
-        class="textbox-guest"
-      />
-      <br />
-      <button 
-        @click="onSubmitGuest"
-        class="button-guest"
-      > Submit </button>
+    <div class="nav">
+      <div class="nav__logo">
+        Free Tickets
+      </div>
+      <div class="nav__links">
+        <router-link to="/">Booking</router-link> |
+        <router-link to="/my-ticket">My Ticket</router-link> |
+        <router-link to="/profile">Profile</router-link>
+      </div>
+      <div class="nav__right">
+        {{ username }}
+      </div>
     </div>
-
-    <table class="table-guests">
-      <tr>
-        <th>id</th>
-        <th>name</th>
-      </tr>
-      <tr v-for="guestResult in guestResults" :key="guestResult.id">
-        <td>{{ guestResult.id }}</td>
-        <td>{{ guestResult.guest_name }}</td>
-      </tr>
-    </table>
+    <div class="router-view">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-  mounted() {
-    this.getGuests();
-  },
-  data() {
-    return {
-      requestUrl: process.env.VUE_APP_API_URL || "http://127.0.0.1:9400",
-      inputGuest: null,
-      isLoading: false,
-      guestResults: [],
+  computed: {
+    username() {
+      return this.$store.state.username;
     }
   },
-  methods: {
-    onSubmitGuest() {
-      if (!this.inputGuest || this.isLoading) {
-        return;
-      }
-      const requestBody = { name: this.inputGuest };
-
-      this.isLoading = true;
-      fetch(this.requestUrl + "/guest", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      })
-      .then(response => response.json())
-      .then(responseBody => {
-        if (responseBody.state == "success") {
-          this.isLoading = false;
-          this.inputGuest = null;
-          this.getGuests();
-        }
-      })
-      .catch((error) => {
-        this.isLoading = false;
-        console.error('Error:', error);
-      });
-    },
-    getGuests() {
-      fetch(this.requestUrl + "/guests", {
-        method: 'GET'
-      })
-      .then(response => response.json())
-      .then(responseBody => {
-        if (responseBody.state == "success") {
-          this.guestResults = responseBody.data;
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    }
-  }
-}
+};
 </script>
 
-<style>
+<style lang="less">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
-.input-field {
-  display: block;
+.router-view {
+  padding: 0 30px;
 }
 
-.textbox-guest, .button-guest {
+.nav {
+  display: flex;
+  padding: 30px;
+  justify-content: space-between;
+  background: aliceblue;
+  * {
+    align-self: center;
+  }
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+
+.nav__logo {
+  font-weight: 600;
+  font-family: cursive;
   font-size: 20px;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px 0;
-  border-color: green;
 }
 
-.table-guests {
-  font-size: 16px;
-  margin: 15px auto 0 auto;
+.nav__links {
+  align-self: center;
 }
 </style>
