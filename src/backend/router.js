@@ -7,6 +7,7 @@ const ticketsRouter = express.Router();
 router.post('/ticket', ticketController.createTicket);
 ticketsRouter.get('/spec', ticketController.getTicketSpec);
 ticketsRouter.get('/user', ticketController.getTicketsByUser);
+ticketsRouter.get('/reservation', ticketController.getTicketsReservation);
 router.use('/tickets', ticketsRouter); 
 
 module.exports = router

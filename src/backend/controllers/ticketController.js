@@ -22,7 +22,7 @@ exports.createTicket = async function (req, res) {
       FROM
         tickets 
       WHERE ticket_spec_id='${ticketSpec[0].id}'
-      AND created_at between '${todayDate} 00:00:00' AND '${todayDate} 23:59:59';
+      AND DATE(created_at) = '${todayDate}';
     `;
     let countTicket = await db.query(sqlCountTicketsByType);
     countTicket = countTicket[0]["SUM(amount)"];
@@ -100,6 +100,41 @@ exports.getTicketsByUser = async function (req, res) {
       state: "failure",
       message: err,
       inputErrors: inputErrors ? inputErrors : {},
+    });
+  }
+};
+
+exports.getTicketsReservation = async function (req, res) {
+  try {
+    const sqlTicketsReservationParams = [1];
+    let sqlTicketsReservation = `
+      SELECT 
+      DATE(t.created_at) date,
+      ts.ticket_type ticket_type,
+      SUM(t.amount) sum_amount,
+        ts.max_amount_per_day max_amount_per_day,
+        IF(SUM(t.amount)>ts.max_amount_per_day, 0, 1) is_available
+      FROM 
+        tickets t
+      INNER JOIN 
+        ticket_spec ts
+      ON t.ticket_spec_id = ts.id
+      WHERE ?
+      GROUP BY DATE(t.created_at), ts.ticket_type, ts.max_amount_per_day
+    `;
+    if (req.query.date) {
+      sqlTicketsReservation = sqlTicketsReservation.replace("?", "DATE(t.created_at) = ?");
+      sqlTicketsReservationParams[0] = req.query.date;
+    }
+    const ticketsReservation = await db.query(sqlTicketsReservation, sqlTicketsReservationParams);
+    res.status(200).send({
+      state: "success",
+      data: ticketsReservation,
+    });
+  } catch (err) {
+    res.status(400).send({
+      state: "failure",
+      message: err
     });
   }
 };

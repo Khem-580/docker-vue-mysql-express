@@ -9,6 +9,7 @@ class Database {
       user: process.env.DB_USER || "root",
       password: process.env.DB_PASSWORD || "password",
       database: process.env.DB_NAME || "ticket_management",
+      timezone: 'utc'
     }
   ) {
     this.connection = mysql.createConnection(config);
