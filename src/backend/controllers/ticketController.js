@@ -104,29 +104,32 @@ exports.getTicketsByUser = async function (req, res) {
   }
 };
 
-exports.getTicketsReservation = async function (req, res) {
+exports.getTicketsForReservation = async function (req, res) {
   try {
-    const sqlTicketsReservationParams = [1];
-    let sqlTicketsReservation = `
+    const sqlTicketsReservation = `
       SELECT 
-      DATE(t.created_at) date,
-      ts.ticket_type ticket_type,
-      SUM(t.amount) sum_amount,
-        ts.max_amount_per_day max_amount_per_day,
-        IF(SUM(t.amount)>ts.max_amount_per_day, 0, 1) is_available
-      FROM 
-        tickets t
-      INNER JOIN 
-        ticket_spec ts
-      ON t.ticket_spec_id = ts.id
-      WHERE ?
-      GROUP BY DATE(t.created_at), ts.ticket_type, ts.max_amount_per_day
+          ts.ticket_type ticket_type,
+          IF(t.sum_amount IS NULL, 0, t.sum_amount) sum_amount,
+          ts.max_amount_per_day max_amount_per_day,
+          ts.price price,
+          IF(t.is_available IS NULL, 1, t.is_available) is_available
+      FROM ticket_spec ts
+      LEFT JOIN (
+            SELECT 
+            t.ticket_spec_id,
+              SUM(t.amount) sum_amount,
+              IF(SUM(t.amount)>ts.max_amount_per_day, 0, 1) is_available
+            FROM 
+              tickets t
+            INNER JOIN 
+              ticket_spec ts
+            ON t.ticket_spec_id = ts.id
+            WHERE DATE(t.created_at) = ?
+            GROUP BY DATE(t.created_at), ts.id, ts.max_amount_per_day
+      ) AS t
+      ON t.ticket_spec_id = ts.id;
     `;
-    if (req.query.date) {
-      sqlTicketsReservation = sqlTicketsReservation.replace("?", "DATE(t.created_at) = ?");
-      sqlTicketsReservationParams[0] = req.query.date;
-    }
-    const ticketsReservation = await db.query(sqlTicketsReservation, sqlTicketsReservationParams);
+    const ticketsReservation = await db.query(sqlTicketsReservation, new Date().toJSON().slice(0, 10));
     res.status(200).send({
       state: "success",
       data: ticketsReservation,
