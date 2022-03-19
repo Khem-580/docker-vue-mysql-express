@@ -76,6 +76,7 @@ export default {
   methods: {
     onClickBuyBtn() {
       this.$emit('onClickBuyBtn', {
+        ticketType: this.ticketType,
         boughtAmount: this.boughtAmount
       });
     }
