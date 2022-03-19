@@ -67,7 +67,17 @@ exports.getTicketsByUser = async function (req, res) {
     if (inputErrors) {
       throw "Invalid input";
     }
-    let sqlUserTicket = `SELECT * FROM tickets WHERE full_name=?`;
+    let sqlUserTicket = `
+      SELECT
+        t.id,
+          t.full_name,
+          ts.ticket_type,
+          t.amount,
+          t.created_at
+      FROM tickets t
+      INNER JOIN ticket_spec ts
+      ON t.ticket_spec_id = ts.id
+      WHERE t.full_name=?`;
     let sqlUserTicketParams = [req.query.fullname];
     if (req.query.ticketType) {
       const sqlTicketSpec = `
@@ -77,19 +87,20 @@ exports.getTicketsByUser = async function (req, res) {
       `;
       const ticketSpec = await db.query(sqlTicketSpec, [req.query.ticketType]);
       if (ticketSpec.length > 0) {
-        sqlUserTicket += ` AND ticket_spec_id=?`;
+        sqlUserTicket += ` AND t.ticket_spec_id=?`;
         sqlUserTicketParams.push(ticketSpec[0].id);
       } else {
         throw "Ticket type is invalid";
       }
     }
     if (req.query.date) {
-      sqlUserTicket += ` AND created_at between ? AND ?`;
+      sqlUserTicket += ` AND t.created_at between ? AND ?`;
       sqlUserTicketParams.push(
         req.query.date + " 00:00:00",
         req.query.date + " 23:59:59"
       );
     }
+    sqlUserTicket += ` ORDER BY t.created_at DESC`;
     const userTicket = await db.query(sqlUserTicket, sqlUserTicketParams);
     res.status(200).send({
       state: "success",
@@ -119,7 +130,7 @@ exports.getTicketsForReservation = async function (_req, res) {
             SELECT 
             t.ticket_spec_id,
               SUM(t.amount) sum_amount,
-              IF(SUM(t.amount)>ts.max_amount_per_day, 0, 1) is_available
+              IF(SUM(t.amount)>=ts.max_amount_per_day, 0, 1) is_available
             FROM 
               tickets t
             INNER JOIN 

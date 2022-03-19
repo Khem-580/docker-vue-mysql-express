@@ -15,6 +15,7 @@
         :isAvailable=tt.is_available
         @onClickBuyBtn="handleBuyBtnEvent"
       />
+      <b-loading :is-full-page="true" v-model="isLoading" :can-cancel="true"></b-loading>
     </div>
   </div>
 </template>
@@ -29,7 +30,8 @@ export default {
   },
   data() {
     return {
-      todayTickets: null
+      todayTickets: null,
+      isLoading: true,
     }
   },
   mounted() {
@@ -40,6 +42,7 @@ export default {
       this.$buefy.dialog.confirm({
         message: `Wanna buy ${data.boughtAmount} tickets with no refund ?`,
         onConfirm: () => {
+          this.isLoading = true;
           let requestBody = {
             fullname: this.$store.state.username,
             ticketType: data.ticketType,
@@ -61,21 +64,26 @@ export default {
                 duration: 3000,
                 type: 'is-success'
               })
+              this.$router.push("my-ticket");
             } else {
               this.$buefy.toast.open({
                 message: responseBody.message,
-                duration: 3500,
+                duration: 5000,
                 type: 'is-danger'
               })
             }
           })
           .catch((error) => {
             console.error(error);
+          })
+          .finally(() => {
+            this.isLoading = false;
           });
         }
       })
     },
     getTodayTickets() {
+      this.isLoading = true;
       fetch(process.env.VUE_APP_API_URL + "/tickets/reservation", {
         method: 'GET'
       })
@@ -87,6 +95,9 @@ export default {
       })
       .catch((error) => {
         console.error(error);
+      })
+      .finally(() => {
+        this.isLoading = false;
       });
     }
   }
@@ -100,10 +111,9 @@ export default {
   flex-wrap: wrap;
   gap: 40px;
 }
-
 .ticket-booking__topic {
   font-size: 34px;
-  margin: 28px;
+  margin: 8px 0 28px 0;
   text-decoration: underline;
   font-weight: 600;
 }

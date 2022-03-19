@@ -36,11 +36,9 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-
 .router-view {
-  padding: 0 30px;
+  padding: 20px 30px;
 }
-
 .nav {
   display: flex;
   padding: 30px;
