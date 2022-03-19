@@ -15,7 +15,7 @@ cp .env.sample .env
 npm run serve
 ```
 
-2. Serve web app in src/frontend directory
+2. Serve nodejs app in src/backend directory
 ```sh
 cd ./src/backend
 npm install
