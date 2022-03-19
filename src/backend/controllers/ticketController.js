@@ -104,13 +104,14 @@ exports.getTicketsByUser = async function (req, res) {
   }
 };
 
-exports.getTicketsForReservation = async function (req, res) {
+exports.getTicketsForReservation = async function (_req, res) {
   try {
     const sqlTicketsReservation = `
       SELECT 
           ts.ticket_type ticket_type,
           IF(t.sum_amount IS NULL, 0, t.sum_amount) sum_amount,
           ts.max_amount_per_day max_amount_per_day,
+          ts.min_amount_per_order min_amount_per_order,
           ts.price price,
           IF(t.is_available IS NULL, 1, t.is_available) is_available
       FROM ticket_spec ts

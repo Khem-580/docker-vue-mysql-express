@@ -1,14 +1,30 @@
 <template>
   <div class="ticket-booking">
-    A 5000
-    B 2500 SOLD OUT
-    C 1000
-    D 500
+    <TicketCard
+      ticketImgUrl="A.png"
+      ticketType="A"
+      :minAmountPerOrder=2
+      :sumAmount=2
+      :maxAmountPerDay=10
+      :price=500
+      :isAvailable=1
+      @onClickBuyBtn="handleBuyBtnEvent"
+    />
   </div>
 </template>
 
 <script>
-  export default {
-    
+import TicketCard from "@/components/TicketCard.vue";
+
+export default {
+  name: "TicketBooking",
+  components: {
+    TicketCard,
+  },
+  methods: {
+    handleBuyBtnEvent(data) {
+      console.log(data);
+    }
   }
+};
 </script>
