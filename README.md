@@ -1,7 +1,30 @@
-A Dockerization which combines many services for web development
+A Dockerization which combines a lot of services for web development
 such as mysql, phpmyadmin, nodejs and nginx
 
 ## Installation
+Make sure you have these tools on your PC
+- Nodejs version 12 or higher (LTS version)
+- Docker
+
+#### There are 2 ways to set up this project
+
+#### 1. Traditional way
+
+1. Serve web app in src/frontend directory
+```sh
+cd ./src/frontend
+npm install
+npm run serve
+```
+
+2. At root of this project
+```sh
+docker-compose up -d --build
+```
+
+3. Enjoy "http://localhost:8080" on your browser
+---
+#### 2. Nginx way
 
 1. Copy text below and place in your host file 
 ```
@@ -15,14 +38,10 @@ cd ./src/frontend
 npm install
 npm run build
 ```
-***Optional*** If you don't want to run website via nginx you can run serve in this step
-```sh
-npm run serve
-```
 
 3. At root of this project
 ```sh
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 4. Test "http://local-frontend" on your browser

@@ -1,7 +1,7 @@
 <template>
   <div class="ticket-booking">
     <h1 class="ticket-booking__topic">
-      Today's ticket
+      Today's tickets
     </h1>
     <div class="ticket-booking__cards">
       <TicketCard
