@@ -26,14 +26,14 @@ exports.createTicket = async function (req, res) {
     `;
     let countTicket = await db.query(sqlCountTicketsByType);
     countTicket = countTicket[0]["SUM(amount)"];
-    if (countTicket > ticketSpec[0].max_amount_per_day) {
+    if (countTicket + req.body.amount > ticketSpec[0].max_amount_per_day) {
       throw "This ticket type is not available for now, please try again tomorrow";
     }
     const sqlInsertTicket = `INSERT INTO tickets(full_name, ticket_spec_id, amount) VALUES (?,'${ticketSpec[0].id}',?);`;
     await db.query(sqlInsertTicket, [req.body.fullname, req.body.amount]);
     res.status(200).send({
       state: "success",
-      message: "Create tickets successfully",
+      message: "You have bought the tickets successfully",
     });
   } catch (err) {
     res.status(400).send({

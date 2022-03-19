@@ -8,7 +8,7 @@
     <div class="ticket-card__body">
       <b-numberinput v-model="boughtAmount" :placeholder=0 :min="minAmountPerOrder"></b-numberinput>
       <div class="buy-button-field">
-        <button class="buy" @click="onClickBuyBtn">
+        <button :class="buyButtonClasses" @click="onClickBuyBtn">
           Buy
         </button>
       </div>
@@ -71,10 +71,19 @@ export default {
         "buyable": this.isAvailable,
         "sold-out": !this.isAvailable
       };
+    },
+    buyButtonClasses() {
+      return {
+        "buy": this.isAvailable,
+        "buy--disabled": !this.isAvailable
+      };
     }
   },
   methods: {
     onClickBuyBtn() {
+      if (!this.isAvailable) {
+        return;
+      }
       this.$emit('onClickBuyBtn', {
         ticketType: this.ticketType,
         boughtAmount: this.boughtAmount
@@ -87,6 +96,7 @@ export default {
 <style scoped lang="less">
 .ticket-card {
   width: 275px;
+  min-height: 435px;
   box-shadow: 1px 2px 4px #7957D5;
   border: 4px solid #7957D5;
   border-radius: 10%;
@@ -122,6 +132,17 @@ export default {
     padding: 5px 30px;
     outline: 0;
     border: 1px solid #7957D5;
+    border-radius: 5px;
+  }
+  button.buy--disabled {
+    display: inline-block;
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+    background: #C5C5C5;
+    padding: 5px 30px;
+    outline: 0;
+    border: 1px solid #C5C5C5;
     border-radius: 5px;
   }
   .b-numberinput {
