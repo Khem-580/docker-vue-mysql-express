@@ -5,38 +5,6 @@ networks:
     driver: bridge
 
 services:
-  nginx:
-    container_name: my-nginx
-    image: nginx:latest
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/error.log:/etc/nginx/error_log.log
-      - ./nginx/cache/:/etc/nginx/cache
-      - ./src/frontend/dist/:/var/www/frontend/
-      - ./src/backend/:/var/www/backend/
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - my-network
-    depends_on:
-      - backend
-
-  backend:
-    container_name: my-backend
-    build: 
-      context: ./src/backend
-      dockerfile: service-backend.Dockerfile
-    ports:
-      - 9400:9400
-    networks:
-      - my-network
-    volumes: 
-      - ./src/backend:/app
-      - /app/node_modules
-    depends_on:
-      - db
-
   db:
     container_name: my-db
     image: mysql

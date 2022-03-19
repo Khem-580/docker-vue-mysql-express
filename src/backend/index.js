@@ -12,5 +12,5 @@ app.use('/', router);
 app.options('*', cors());
 
 app.listen(port, () => {
-    console.log(`Example app listening at ${process.env.DB_HOST}:${port}`)
+    console.log(`Example app listening at ${port}`)
 })
