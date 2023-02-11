@@ -7,19 +7,19 @@ Make sure you have these tools on your PC
 
 #### 
 
-1. Serve web app in src/frontend directory
+1. Serve nodejs app in src/backend directory
+```sh
+cd ./src/backend
+npm install
+node index
+```
+
+2. Serve web app in src/frontend directory
 ```sh
 cd ./src/frontend
 npm install
 cp .env.sample .env
 npm run serve
-```
-
-2. Serve web app in src/frontend directory
-```sh
-cd ./src/backend
-npm install
-node index
 ```
 
 3. At root of this project run
